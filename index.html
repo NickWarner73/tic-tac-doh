@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Doh</title>
+  <link rel="stylesheet" type"text/css" href="styles.css">
+</head>
+
+<body>
+
+  <div class="board" id="board">
+    <!-- 9 cells for the Tic Tac Toe board -->
+  </div>
+
+  <button id="bumpButton">Bump (2 left)</button>
+
+  <div class="scoreboard">
+    Wins: <span id="wins">0</span> |
+    Losses: <span id="losses">0</span> |
+    Draws: <span id="draws">0</span>
+  </div>
+
+  <div id="message"></div>
+
+  <div id="modal" class="hidden">
+    <div class="modal-content">
+      <span id="modal-message"></span>
+      <button id="modal-close">OK</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
