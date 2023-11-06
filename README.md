@@ -53,6 +53,7 @@ Each decision was made to balance development speed, ease of use, and the potent
 
 Tic-Tac-Doh is open-source software licensed under the MIT License.
 
+
 ## Acknowledgments
 
 - The development of Tic-Tac-Doh was assisted by OpenAI's ChatGPT, which provided guidance and suggestions throughout the creative process.
