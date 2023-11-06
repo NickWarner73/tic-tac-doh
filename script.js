@@ -11,19 +11,22 @@ const modal = document.getElementById('modal');
 const modalMessage = document.getElementById('modal-message');
 const modalClose = document.getElementById('modal-close');
 
-const xIcon = '<img src="images/x.svg" alt="X Icon">';
-const oIcon = '<img src="images/o.svg" alt="O Icon">';
+const xIcon = '<img src="images/x.svg" alt="X Icon" style="width: 100%; height: 100%;">';
+const oIcon = '<img src="images/o.svg" alt="O Icon" style="width: 100%; height: 100%;">';
+const dohIcon = '<img src="images/doh.svg" alt="O Icon" style="width: 100%; height: 100%;">';
 
 let gameState = ['', '', '', '', '', '', '', '', ''];
-let bumpUses = 2;
 let currentPlayer = 'X';
 let gameOver = false;
+
+let bumpUses = 2;
 let bumpState = false;
+let aiBumpUses = 2;
 
 const scores = {
-  'X': -10, // AI loss
-  'O': 10,  // AI win
-  'draw': 0 // Draw
+  'X': -10, 
+  'O': 10,  
+  'draw': 0 
 };
 
 // Initialize board
@@ -35,10 +38,29 @@ for (let i = 0; i < 9; i++) {
 }
 
 function playerMove(index) {
+
   if (gameState[index] === '' && !gameOver) {
-    gameState[index] = 'X';
-    updateBoard();
-    checkWinner();
+    //decide if the AI should use a bump for the user's go
+    if (aiBumpUses > 0 && !gameOver && Math.random() > 0.5) {
+      aiBumpUses--;
+      gameState[index] = 'Doh';
+      updateBoard();
+      setTimeout(() => {
+        let index2 = Math.floor(Math.random() * 9); // find a random empty cell
+        while (gameState[index2] !== '') {
+          index2 = Math.floor(Math.random() * 9);
+        }
+        gameState[index2] = 'X';
+        gameState[index] = '';
+        updateBoard();
+        checkWinner();
+      }, 1000);
+    } else {
+      gameState[index] = 'X';
+      updateBoard();
+      checkWinner();
+    }
+
     if (!gameOver) {
       aiMove();
       updateBoard();
@@ -101,12 +123,12 @@ function aiMove() {
   }
   // If bumpState is active, make a recursive call to find the next best move.
   if (bumpState) {
-    gameState[move] = 'D'; // Temporarily set the best move to 'D'
+    gameState[move] = 'Doh'; // Temporarily set the best move to Doh'
     bumpState = false; // Prevent infinite recursion
     updateBoard(); // Reflect changes on the UI
     setTimeout(() => {
       aiMove(); // Recursive call
-      gameState[move] = ''; // Reset the 'D' spot after the recursive call
+      gameState[move] = ''; // Reset the 'Doh' spot after the recursive call
       updateBoard(); // Reflect changes on the UI
     }, 1000);
 
@@ -121,7 +143,13 @@ function updateBoard() {
   let cells = document.querySelectorAll('.cell');
   cells.forEach((cell, i) => {
     if (gameState[i]) {
-      cell.textContent = gameState[i];
+      if (gameState[i] === 'X') {
+        cell.innerHTML = xIcon;
+      } else if (gameState[i] === 'O') {
+        cell.innerHTML = oIcon;
+      } else if (gameState[i] === 'Doh') {
+        cell.innerHTML = dohIcon;
+      }
       cell.classList.add('taken');
     } else {
       cell.textContent = '';
@@ -144,7 +172,7 @@ function getWinner(gameState) {
     }
   }
   // Check for draw
-  if (!gameState.includes('') && !gameState.includes('D')) {
+  if (!gameState.includes('') && !gameState.includes('Doh')) {
     return 'draw'; // All cells are filled and no winner, it's a draw
   }
 
@@ -174,6 +202,7 @@ function resetGame() {
   gameState.fill('');
   gameOver = false;
   bumpUses = 2;
+  aiBumpUses = 2;
   bumpButton.textContent = `Bump (2 left)`;
   updateBoard();
 }
