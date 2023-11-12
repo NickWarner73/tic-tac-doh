@@ -1,33 +1,54 @@
 
 // Tic-Tac-Doh JavaScript Code
+
 const board = document.getElementById('board');
 const bumpButton = document.getElementById('bumpButton');
 const winsElement = document.getElementById('wins');
 const lossesElement = document.getElementById('losses');
 const drawsElement = document.getElementById('draws');
 const messageElement = document.getElementById('message');
-// Get references to the modal, modal message, and modal close button
+
+// References to the modal, modal message, and modal close button
 const modal = document.getElementById('modal');
 const modalMessage = document.getElementById('modal-message');
 const modalClose = document.getElementById('modal-close');
 
+// Icons
 const xIcon = '<img src="images/x.svg" alt="X Icon" style="width: 100%; height: 100%;">';
 const oIcon = '<img src="images/o.svg" alt="O Icon" style="width: 100%; height: 100%;">';
 const dohIcon = '<img src="images/doh.svg" alt="O Icon" style="width: 100%; height: 100%;">';
 
+// Game state variables
 let gameState = ['', '', '', '', '', '', '', '', ''];
 let currentPlayer = 'X';
 let gameOver = false;
 
+// Bump variables
 let bumpUses = 2;
 let bumpState = false;
 let aiBumpUses = 2;
 
+// Scores for minimax algorithm
 const scores = {
-  'X': -10, 
-  'O': 10,  
-  'draw': 0 
+  'X': -10,
+  'O': 10,
+  'draw': 0
 };
+
+// Add an event listener to the close button
+modalClose.addEventListener('click', function () {
+  modal.classList.add('hidden');
+  resetGame();
+});
+
+// Add an event listener to the bump button
+bumpButton.addEventListener('click', () => {
+  if (bumpUses > 0 && !gameOver && !bumpState) {
+    bumpState = true;
+    bumpUses--;
+    bumpButton.textContent = `Bump (${bumpUses} left)`;
+  }
+});
 
 // Initialize board
 for (let i = 0; i < 9; i++) {
@@ -38,33 +59,39 @@ for (let i = 0; i < 9; i++) {
 }
 
 function playerMove(index) {
-
-  if (gameState[index] === '' && !gameOver) {
-    //decide if the AI should use a bump for the user's go
-    if (aiBumpUses > 0 && !gameOver && Math.random() > 0.5) {
+  if (gameState[index] === '' && !gameOver) { // Check if the cell is empty and the game is not over
+    if (aiBumpUses > 0 && !gameOver && Math.random() > 0.5) { // 50% chance of AI bumping
       aiBumpUses--;
       gameState[index] = 'Doh';
-      updateBoard();
-      setTimeout(() => {
+      setTimeout(() => {  // Wait 1 second to display the 'Doh' icon before moving it
+        updateBoard(); 
         let index2 = Math.floor(Math.random() * 9); // find a random empty cell
         while (gameState[index2] !== '') {
           index2 = Math.floor(Math.random() * 9);
         }
         gameState[index2] = 'X';
-        gameState[index] = '';
-        updateBoard();
-        checkWinner();
-      }, 1000);
+        gameState[index] = ''; // Reset the 'Doh' spot
+        setTimeout(() => { // Wait 1 second to display the 'X' icon
+          updateBoard();
+          checkWinner();
+          setTimeout(() => { // Wait 1 second before AI moves
+            if (!gameOver) {
+              aiMove();
+              updateBoard();
+              checkWinner();
+            }
+          }, 500);
+        }, 500);
+      }, 500);
     } else {
       gameState[index] = 'X';
       updateBoard();
       checkWinner();
-    }
-
-    if (!gameOver) {
-      aiMove();
-      updateBoard();
-      checkWinner();
+      if (!gameOver) {
+        aiMove();
+        updateBoard();
+        checkWinner();
+      }
     }
     bumpState = false;
   }
@@ -104,9 +131,7 @@ function minimax(localGameState, depth, isMaximizing) {
   }
 }
 
-// This function determines the AI's best move using the minimax algorithm.
-// It iterates over each cell, simulating an 'O' move in empty spots and calling minimax to calculate the move's score.
-// The highest-scoring move is then executed by the AI as its actual move on the game board.
+// This function is called when it's the AI's turn to move.
 function aiMove() {
   let bestScore = -Infinity;
   let move;
@@ -139,12 +164,14 @@ function aiMove() {
   }
 }
 
+// This function updates the game board based on the current game state.
 function updateBoard() {
   let cells = document.querySelectorAll('.cell');
   cells.forEach((cell, i) => {
     if (gameState[i]) {
       if (gameState[i] === 'X') {
         cell.innerHTML = xIcon;
+        cell.classList.add('X');
       } else if (gameState[i] === 'O') {
         cell.innerHTML = oIcon;
       } else if (gameState[i] === 'Doh') {
@@ -198,6 +225,7 @@ function checkWinner() {
   }
 }
 
+// Reset the game state and UI
 function resetGame() {
   gameState.fill('');
   gameOver = false;
@@ -207,23 +235,8 @@ function resetGame() {
   updateBoard();
 }
 
-
-bumpButton.addEventListener('click', () => {
-  if (bumpUses > 0 && !gameOver && !bumpState) {
-    bumpState = true;
-    bumpUses--;
-    bumpButton.textContent = `Bump (${bumpUses} left)`;
-  }
-});
-
 // Create a function to show the modal with a specific message
 function showModal(message) {
   modalMessage.textContent = message;
   modal.classList.remove('hidden');
 }
-
-// Add an event listener to the close button
-modalClose.addEventListener('click', function () {
-  modal.classList.add('hidden');
-  resetGame();
-});

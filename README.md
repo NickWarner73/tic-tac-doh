@@ -14,7 +14,7 @@ Welcome to Tic-Tac-Doh, a fun twist on the classic game of Tic-Tac-Toe. This sin
 
 1. Start the game by choosing a square to place your 'X'.
 2. The AI opponent will place an 'O'.
-3. Use your two 'Bump' opportunities to shift the AI's last move to another space.
+3. Use your two 'Bump' opportunities to shift the AI's last move to another space. Warning - the AI may bump you too!
 4. The first to get three of their marks in a row vertically, horizontally, or diagonally wins!
 5. The game will tally your overall score as you play multiple rounds.
 
